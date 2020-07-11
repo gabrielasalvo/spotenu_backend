@@ -55,6 +55,9 @@ export class UserBusiness {
     );
 
     const newUser = await this.userDatabase.createUser(user);
+    if(role !== "admin") {
+      await this.userDatabase.disapproved(role, id)
+    }
 
     const token = this.authenticator.generate({ id, role });
     return { token };
@@ -65,5 +68,5 @@ export class UserBusiness {
 
   // public async disapproved(role:string) {
   //   await this.userDatabase.disapproved(role)
-  // }
+  //  }
 }
