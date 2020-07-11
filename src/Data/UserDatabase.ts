@@ -45,4 +45,40 @@ export class UserDatabase extends BaseDatabase {
     );
     return this.UserFromUserModel(result[0][0]);
   }
+
+  public async approve(id: string) {
+    const result = await this.getConnection().raw(`
+    SELECT * FROM '${this.table}'
+    WHERE id = "${id}"
+    `);
+
+    const data = result[0][0];
+    console.log(data);
+
+    if (data.is_approved === 1) {
+      throw new Error("Usuário já aprovado!");
+    }
+
+    await this.getConnection().raw(`
+    UPDATE '${this.table}'
+    SET is_approved = 0
+    WHERE id = "${id}"
+    `);
+  }
+
+  // public async disapproved(id: string) {
+  //   const result = await super.getConnection().raw(`
+  //   SELECT * FROM '${this.table}'
+  //   WHERE id = "${id}"
+  //   `);
+
+  //   const data = result[0][0];
+  //   console.log(data);
+
+  //   await this.getConnection().raw(`
+  //     UPDATE '${this.table}'
+  //     SET is_approved = 0
+  //     WHERE id = "${id}"
+  //     `);
+  // }
 }

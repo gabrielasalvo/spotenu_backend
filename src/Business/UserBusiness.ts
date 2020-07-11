@@ -9,10 +9,10 @@ import { User, UserRole } from "../model/User";
 
 export class UserBusiness {
   constructor(
-    private userDatabase: UserDatabase,
-    private hashManager: HashManager,
-    private idGenerator: IdGenerator,
-    private authenticator: Authenticator
+    public userDatabase: UserDatabase,
+    public hashManager: HashManager,
+    public idGenerator: IdGenerator,
+    public authenticator: Authenticator
   ) {}
 
   public async signup(
@@ -35,18 +35,35 @@ export class UserBusiness {
         "YOUR PASSWORD NEED 6 OR MORE CHARACTERS"
       );
     }
+    if (role === UserRole.ADMIN && password.length < 10) {
+      throw new InvalidParameterError(
+        "YOUR PASSWORD NEED 10 OR MORE CHARACTERS"
+      );
+    }
 
-    const id = this.idGenerator.generate()
-    
-    const hashpassword = await this.hashManager.hash(password)
+    const id = this.idGenerator.generate();
 
-    const user = new User(id, name, nickname, email, hashpassword, User.userRoleType(role))
+    const hashpassword = await this.hashManager.hash(password);
 
-    const newUser = await this.userDatabase.createUser(user)
+    const user = new User(
+      id,
+      name,
+      nickname,
+      email,
+      hashpassword,
+      User.userRoleType(role)
+    );
 
-    
-    const token = this.authenticator.generate({id, role})
-    return { token }
-    
-}
+    const newUser = await this.userDatabase.createUser(user);
+
+    const token = this.authenticator.generate({ id, role });
+    return { token };
+  }
+  public async approve(id: string) {
+    await this.userDatabase.approve(id);
+  }
+
+  // public async disapproved(role:string) {
+  //   await this.userDatabase.disapproved(role)
+  // }
 }
