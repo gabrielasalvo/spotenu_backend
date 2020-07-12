@@ -9,10 +9,10 @@ import { User, UserRole } from "../model/User";
 
 export class UserBusiness {
   constructor(
-    public userDatabase: UserDatabase,
-    public hashManager: HashManager,
-    public idGenerator: IdGenerator,
-    public authenticator: Authenticator
+    private userDatabase: UserDatabase,
+    private hashManager: HashManager,
+    private idGenerator: IdGenerator,
+    private authenticator: Authenticator
   ) {}
 
   public async signup(
