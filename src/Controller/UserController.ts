@@ -5,6 +5,7 @@ import { UserBusiness } from "../Business/UserBusiness";
 import { UserDatabase } from "../Data/UserDatabase";
 import { Request, Response } from "express";
 import { UserRole } from "../model/User";
+import { Unauthorized } from "../error/Unauthorized";
 
 export class UserController {
   private static UserBusiness = new UserBusiness(
@@ -23,10 +24,10 @@ export class UserController {
         req.body.password,
         req.body.role
       );
-    //   if(req.body.role !== "admin") {
-    //     await  UserController.UserBusiness.disapproved(req.body.role)
-          
-    //   }
+      //   if(req.body.role !== "admin") {
+      //     await  UserController.UserBusiness.disapproved(req.body.role)
+
+      //   }
 
       res.status(200).send({
         result,
@@ -34,7 +35,21 @@ export class UserController {
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message });
     }
+  }
 
+  public async login(req: Request, res: Response) {
+    try {
+      
+      const userOnline = await UserController.UserBusiness.login(
+        req.body.email,
+        req.body.password,
+      
+        
+      )
+      res.status(200).send({ message: "User online" });
+    } catch (err) {
+      res.status(411).send( {message:"UNAUTHORIZED"})
+    }
   }
   async approve(req: Request, res: Response) {
     try {
@@ -56,6 +71,4 @@ export class UserController {
       });
     }
   }
-
-
 }

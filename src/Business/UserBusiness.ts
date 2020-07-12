@@ -55,8 +55,8 @@ export class UserBusiness {
     );
 
     const newUser = await this.userDatabase.createUser(user);
-    if(role !== "admin") {
-      await this.userDatabase.disapproved(role, id)
+    if (role !== "admin") {
+      await this.userDatabase.disapproved(role);
     }
 
     const token = this.authenticator.generate({ id, role });
@@ -66,7 +66,20 @@ export class UserBusiness {
     await this.userDatabase.approve(id);
   }
 
-  // public async disapproved(role:string) {
-  //   await this.userDatabase.disapproved(role)
-  //  }
+  public async login(password: string, email?: string, nickname?: string) {
+    if (!email && !nickname) {
+      throw new InvalidParameterError("Missing input");
+    }
+    if ((email && password) || (nickname && password)) {
+      const login = await this.userDatabase.getUserByEmail(email);
+      if (!login) {
+        throw new NotFoundError("Invalid user");
+      }
+      const isPasswordCorrect = await this.hashManager.compareHash(password, login.getPassword())
+      if(!isPasswordCorrect) {
+        throw new InvalidParameterError("Somethings wrong")
+        
+      }
+    }
+  }
 }
