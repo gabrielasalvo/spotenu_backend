@@ -1,5 +1,6 @@
 import { User, UserRole } from "../model/User";
 import { BaseDatabase } from "./BaseDatabase";
+import { InvalidParameterError } from "../error/invalidParameterError";
 
 export class UserDatabase extends BaseDatabase {
   protected table: string = "user_spotenu";
@@ -44,5 +45,37 @@ export class UserDatabase extends BaseDatabase {
      `
     );
     return this.UserFromUserModel(result[0][0]);
+  }
+
+  public async approve(id: string) {
+    const result = await this.getConnection().raw(`
+    SELECT * FROM '${this.table}'
+    WHERE id = "${id}"
+    `);
+
+    const data = result[0][0];
+    console.log(data);
+
+    if (data.is_approved === 1) {
+      throw new Error("Usuário já aprovado!");
+    }
+
+    await this.getConnection().raw(`
+    UPDATE '${this.table}'
+    SET is_approved = 0
+    WHERE id = "${id}"
+    `);
+  }
+
+  public async disapproved(role: string): Promise<any> {
+    try {
+      await this.getConnection().raw(`
+              UPDATE ${this.table}
+                SET is_approved = 0
+                WHERE role = "${role}"
+            `);
+    } catch (err) {
+      throw new InvalidParameterError("User not found");
+    }
   }
 }
