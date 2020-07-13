@@ -15,7 +15,8 @@ export class UserDatabase extends BaseDatabase {
         UserModel.nickname,
         UserModel.password,
         UserModel.role,
-        UserModel.band_description
+        UserModel.band_description,
+        UserModel.is_approved
       )
     );
   }
@@ -24,15 +25,17 @@ export class UserDatabase extends BaseDatabase {
     await super.getConnection().raw(
       `
             INSERT INTO ${
-              this.table
-            } (id, name, email, nickname, password, role)
+      this.table
+      } (id, name, email, nickname, password, role, description_band )
             VALUES (
                 '${user.getId()}',
                 '${user.getName()}',
                 '${user.getEmail()}',
                 '${user.getNickname()}',
                 '${user.getPassword()}',
-                '${user.getRole()}'
+                '${user.getRole()}',
+                '${user.getDescription()}'
+
             )`
     );
   }
@@ -48,6 +51,7 @@ export class UserDatabase extends BaseDatabase {
   }
 
   public async approve(id: string) {
+
     const result = await this.getConnection().raw(`
     SELECT * FROM '${this.table}'
     WHERE id = "${id}"
@@ -67,15 +71,27 @@ export class UserDatabase extends BaseDatabase {
     `);
   }
 
-  public async disapproved(role: string): Promise<any> {
+  public async disapproved(id: string, role: string): Promise<any> {
     try {
-      await this.getConnection().raw(`
-              UPDATE ${this.table}
-                SET is_approved = 0
-                WHERE role = "${role}"
-            `);
-    } catch (err) {
-      throw new InvalidParameterError("User not found");
+      const result = await super.getConnection().raw(
+        `
+     SELECT * FROM ${this.table} WHERE id = '${id}'
+     
+     `
+      )
+      const userRole = this.UserFromUserModel(result[0][0])
+
+      if (userRole.getRole()!== "admin") {
+        await super.getConnection().raw(`
+     UPDATE ${this.table}
+     SET is_approved = 0
+     WHERE role = '${role}'
+     
+     `)
+
+      }
+    }catch(err) {
+      throw new InvalidParameterError("Tivemos um erro. Tente novamente.")
     }
   }
 }

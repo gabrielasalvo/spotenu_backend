@@ -22,12 +22,10 @@ export class UserController {
         req.body.nickname,
         req.body.email,
         req.body.password,
-        req.body.role
+        req.body.role,
+        req.body.description_band 
       );
-      //   if(req.body.role !== "admin") {
-      //     await  UserController.UserBusiness.disapproved(req.body.role)
 
-      //   }
 
       res.status(200).send({
         result,

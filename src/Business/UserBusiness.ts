@@ -20,9 +20,11 @@ export class UserBusiness {
     nickname: string,
     email: string,
     password: string,
-    role: string
+    role: string,
+    description_band?:string
+    
   ) {
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       throw new InvalidParameterError("MISSING INPUT");
     }
 
@@ -40,6 +42,9 @@ export class UserBusiness {
         "YOUR PASSWORD NEED 10 OR MORE CHARACTERS"
       );
     }
+    if(role === UserRole.BANDA && password.length <= 10) {
+      throw new InvalidParameterError ( "Invalid password")
+    }
 
     const id = this.idGenerator.generate();
 
@@ -51,12 +56,14 @@ export class UserBusiness {
       nickname,
       email,
       hashpassword,
-      User.userRoleType(role)
+      User.userRoleType(role),
+      description_band
     );
+
 
     const newUser = await this.userDatabase.createUser(user);
     if (role !== "admin") {
-      await this.userDatabase.disapproved(role);
+      await this.userDatabase.disapproved(id,role);
     }
 
     const token = this.authenticator.generate({ id, role });
