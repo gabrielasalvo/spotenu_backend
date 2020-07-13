@@ -6,6 +6,8 @@ import { NotFoundError } from "../error/notFoundError";
 
 import { InvalidParameterError } from "../error/invalidParameterError";
 import { User, UserRole } from "../model/User";
+import { UserController } from "../Controller/UserController";
+import { access } from "fs";
 
 export class UserBusiness {
   constructor(
@@ -21,8 +23,7 @@ export class UserBusiness {
     email: string,
     password: string,
     role: string,
-    description_band?:string
-    
+    description_band?: string
   ) {
     if (!name || !email || !password || !role) {
       throw new InvalidParameterError("MISSING INPUT");
@@ -42,8 +43,8 @@ export class UserBusiness {
         "YOUR PASSWORD NEED 10 OR MORE CHARACTERS"
       );
     }
-    if(role === UserRole.BANDA && password.length <= 10) {
-      throw new InvalidParameterError ( "Invalid password")
+    if (role === UserRole.BANDA && password.length <= 10) {
+      throw new InvalidParameterError("Invalid password");
     }
 
     const id = this.idGenerator.generate();
@@ -60,10 +61,9 @@ export class UserBusiness {
       description_band
     );
 
-
     const newUser = await this.userDatabase.createUser(user);
     if (role !== "admin") {
-      await this.userDatabase.disapproved(id,role);
+      await this.userDatabase.disapproved(id, role);
     }
 
     const token = this.authenticator.generate({ id, role });
@@ -73,20 +73,42 @@ export class UserBusiness {
     await this.userDatabase.approve(id);
   }
 
-  public async login(password: string, email?: string, nickname?: string) {
-    if (!email && !nickname) {
+  public async login(stringornickname: string, password: string) {
+    if (!stringornickname) {
       throw new InvalidParameterError("Missing input");
     }
-    if ((email && password) || (nickname && password)) {
-      const login = await this.userDatabase.getUserByEmail(email);
-      if (!login) {
-        throw new NotFoundError("Invalid user");
+    const nicknameUser = await this.userDatabase.getUserByNickname(
+      stringornickname
+    );
+    const emailUser = await this.userDatabase.getUserByEmail(stringornickname);
+
+    if (emailUser) {
+      const is_password_correct = await this.hashManager.compareHash(
+        password,
+        emailUser.getPassword()
+      );
+      if (!is_password_correct) {
+        throw new InvalidParameterError("Invalid data");
+      } else {
+        const accessToken = await this.authenticator.generate({
+          id: emailUser.getId(),
+          role: emailUser.getRole(),
+        });
+        return accessToken;
       }
-      const isPasswordCorrect = await this.hashManager.compareHash(password, login.getPassword())
-      if(!isPasswordCorrect) {
-        throw new InvalidParameterError("Somethings wrong")
-        
-      }
+    }
+    if (!nicknameUser) {
+      const is_password_correct = await this.hashManager.compareHash(
+        password,
+        nicknameUser.getPassword()
+      )
+      throw new InvalidParameterError("Invalid nickname");
+    } else {
+      const accessToken = await this.authenticator.generate({
+        id: nicknameUser.getId(),
+        role: nicknameUser.getRole(),
+      });
+      return accessToken;
     }
   }
 }

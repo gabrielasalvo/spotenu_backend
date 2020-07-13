@@ -25,8 +25,8 @@ export class UserDatabase extends BaseDatabase {
     await super.getConnection().raw(
       `
             INSERT INTO ${
-      this.table
-      } (id, name, email, nickname, password, role, description_band )
+              this.table
+            } (id, name, email, nickname, password, role, description_band )
             VALUES (
                 '${user.getId()}',
                 '${user.getName()}',
@@ -40,10 +40,20 @@ export class UserDatabase extends BaseDatabase {
     );
   }
 
+  public async getUserByNickname(nickname: string): Promise<User | undefined> {
+    const result = await this.getConnection().raw(
+      `
+            SELECT * from ${this.table} WHERE nickname ='${nickname}'
+            
+     `
+    );
+    return this.UserFromUserModel(result[0][0]);
+  }
+
   public async getUserByEmail(email: string): Promise<User | undefined> {
     const result = await this.getConnection().raw(
       `
-            SELECT * from ${this.getUserByEmail} WHERE email ='${email}'
+            SELECT * from ${this.table} WHERE email ='${email}'
             
      `
     );
@@ -51,7 +61,6 @@ export class UserDatabase extends BaseDatabase {
   }
 
   public async approve(id: string) {
-
     const result = await this.getConnection().raw(`
     SELECT * FROM '${this.table}'
     WHERE id = "${id}"
@@ -78,20 +87,19 @@ export class UserDatabase extends BaseDatabase {
      SELECT * FROM ${this.table} WHERE id = '${id}'
      
      `
-      )
-      const userRole = this.UserFromUserModel(result[0][0])
+      );
+      const userRole = this.UserFromUserModel(result[0][0]);
 
-      if (userRole.getRole()!== "admin") {
+      if (userRole.getRole() !== "admin") {
         await super.getConnection().raw(`
      UPDATE ${this.table}
      SET is_approved = 0
      WHERE role = '${role}'
      
-     `)
-
+     `);
       }
-    }catch(err) {
-      throw new InvalidParameterError("Tivemos um erro. Tente novamente.")
+    } catch (err) {
+      throw new InvalidParameterError("Tivemos um erro. Tente novamente.");
     }
   }
 }

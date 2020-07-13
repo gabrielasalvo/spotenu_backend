@@ -37,12 +37,12 @@ export class UserController {
 
   public async login(req: Request, res: Response) {
     try {
+      const nickname_email = req.body.nickname || req.body.email
 
-      const userOnline = await UserController.UserBusiness.login(
-        req.body.email,
-        req.body.password,
-      )
-      res.status(200).send({ message: "User online" });
+      const result = await UserController.UserBusiness.login(nickname_email, req.body.password)
+      
+      
+      res.status(200).send({ message: "User online", result });
     } catch (err) {
       res.status(411).send({ message: "UNAUTHORIZED" })
     }
