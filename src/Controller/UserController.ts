@@ -22,12 +22,10 @@ export class UserController {
         req.body.nickname,
         req.body.email,
         req.body.password,
-        req.body.role
+        req.body.role,
+        req.body.description_band 
       );
-      //   if(req.body.role !== "admin") {
-      //     await  UserController.UserBusiness.disapproved(req.body.role)
 
-      //   }
 
       res.status(200).send({
         result,
@@ -39,36 +37,38 @@ export class UserController {
 
   public async login(req: Request, res: Response) {
     try {
-      
+
       const userOnline = await UserController.UserBusiness.login(
         req.body.email,
         req.body.password,
-      
-        
       )
       res.status(200).send({ message: "User online" });
     } catch (err) {
-      res.status(411).send( {message:"UNAUTHORIZED"})
+      res.status(411).send({ message: "UNAUTHORIZED" })
     }
   }
+
+
   async approve(req: Request, res: Response) {
+
     try {
-      const id = req.body.id;
-      const token = req.headers.token as string;
-      const verifiedToken = await UserController.UserBusiness.authenticator.verify(
-        token
-      );
+      const id = req.body.id
+      const token = req.headers.token as string
+      const authenticator = new Authenticator()
+      const verifiedToken = authenticator.verify(token)
 
       if (verifiedToken.role === "admin") {
-        await UserController.UserBusiness.approve(id);
+        await UserController.UserBusiness.approve(id)
+
         res.status(200).send({ message: "Usuário aprovado" });
       } else {
-        res.status(401).send({ error: "Você não está autorizado." });
+        res.status(401).send({
+          error: "Você não foi aprovado"
+        })
       }
+
     } catch (err) {
-      res.status(412).send({
-        message: "Erro",
-      });
+      throw new Unauthorized ("Tivemos problemas")
     }
   }
 }

@@ -9,6 +9,7 @@ export class User {
     private password: string,
     private role: UserRole,
     private description_band?:string,
+    private is_approved?:boolean
   ) {}
 
   public getId(): string {
@@ -32,6 +33,9 @@ export class User {
   public getDescription():any {
       return this.description_band
   }
+  public getApproved():boolean {
+    return this.is_approved
+}
 
   static userRoleType(role: string): UserRole {
     switch (role) {
