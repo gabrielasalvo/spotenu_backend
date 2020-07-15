@@ -23,9 +23,8 @@ export class UserController {
         req.body.email,
         req.body.password,
         req.body.role,
-        req.body.description_band 
+        req.body.description_band
       );
-
 
       res.status(200).send({
         result,
@@ -37,38 +36,37 @@ export class UserController {
 
   public async login(req: Request, res: Response) {
     try {
-      const nickname_email = req.body.nickname || req.body.email
-
-      const result = await UserController.UserBusiness.login(nickname_email, req.body.password)
-      
-      
-      res.status(200).send({ message: "User online", result });
+      const userOnline = await UserController.UserBusiness.login(
+        req.body.email || req.body.nickname,
+        req.body.password
+      );
+      res.status(200).send({ message: "User online", userOnline });
     } catch (err) {
-      res.status(411).send({ message: "UNAUTHORIZED" })
+      res.status(411).send({ message: "UNAUTHORIZED" });
     }
   }
-
 
   async approve(req: Request, res: Response) {
 
-    try {
+    try{
       const id = req.body.id
-      const token = req.headers.token as string
-      const authenticator = new Authenticator()
-      const verifiedToken = authenticator.verify(token)
+      const token = req.headers.authorization as string
+      const authenticator = new Authenticator().verify(token)
 
-      if (verifiedToken.role === "admin") {
-        await UserController.UserBusiness.approve(id)
-
-        res.status(200).send({ message: "Usuário aprovado" });
-      } else {
-        res.status(401).send({
-          error: "Você não foi aprovado"
-        })
+      if(authenticator.role !== UserRole.ADMIN) {
+        throw new Error ("You cannot approve anyone")
       }
 
-    } catch (err) {
-      throw new Unauthorized ("Tivemos problemas")
-    }
+      await UserController.UserBusiness.approve(id)
+      res.status(200).send({
+        message:"User approved"
+      })
+
+
+    }catch(error){
+      res.status(error.errorCode || 400).send({ message: error.message}) 
   }
+
+
+}
 }

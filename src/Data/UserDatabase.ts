@@ -62,7 +62,7 @@ export class UserDatabase extends BaseDatabase {
 
   public async approve(id: string) {
     const result = await this.getConnection().raw(`
-    SELECT * FROM '${this.table}'
+    SELECT * FROM ${this.table}
     WHERE id = "${id}"
     `);
 
@@ -74,8 +74,8 @@ export class UserDatabase extends BaseDatabase {
     }
 
     await this.getConnection().raw(`
-    UPDATE '${this.table}'
-    SET is_approved = 0
+    UPDATE ${this.table}
+    SET is_approved = 1
     WHERE id = "${id}"
     `);
   }
