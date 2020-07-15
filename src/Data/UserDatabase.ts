@@ -60,6 +60,25 @@ export class UserDatabase extends BaseDatabase {
     return this.UserFromUserModel(result[0][0]);
   }
 
+  public async getBands (role:string) :Promise <any> {
+    try {
+      const result = await super.getConnection().raw(
+        `
+        SELECT name, email, nickname, is_approved from ${this.table}
+        WHERE role = '${role}'
+        
+        `
+      )
+      return (result[0]).map((band:any)=>{
+        return this.UserFromUserModel(band)
+      })
+
+
+    }catch (err) {
+      throw new InvalidParameterError("Houston, we have a problem");
+    }
+  }
+
   public async approve(id: string) {
     const result = await this.getConnection().raw(`
     SELECT * FROM ${this.table}

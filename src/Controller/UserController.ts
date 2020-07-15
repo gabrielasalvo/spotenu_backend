@@ -27,24 +27,24 @@ export class UserController {
       };
 
       if (req.body.role === UserRole.ADMIN) {
-        const requestToken = req.headers.authorization as string
-        const verifyAdminToken = new Authenticator().verify(requestToken)
+        const requestToken = req.headers.authorization as string;
+        const verifyAdminToken = new Authenticator().verify(requestToken);
 
         if (verifyAdminToken.role !== UserRole.ADMIN) {
-          throw new Error("You cannot signup as admin")
+          throw new Error("You cannot signup as admin");
         }
       }
       await UserController.UserBusiness.signup(
         newUser.name,
         newUser.nickname,
-        newUser.email, 
+        newUser.email,
         newUser.password,
         newUser.role,
         newUser.description_band
-      )
+      );
 
       res.status(200).send({
-        newUser
+        newUser,
       });
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message });
@@ -63,7 +63,7 @@ export class UserController {
     }
   }
 
-  async approve(req: Request, res: Response) {
+  public async approve(req: Request, res: Response) {
     try {
       const id = req.body.id;
       const token = req.headers.authorization as string;
@@ -77,6 +77,21 @@ export class UserController {
       res.status(200).send({
         message: "User approved",
       });
+    } catch (error) {
+      res.status(error.errorCode || 400).send({ message: error.message });
+    }
+  }
+  public async getBands(req: Request, res: Response) {
+    try {
+      const token = req.headers.authorization!;
+      const verifyAdminToken = new Authenticator().verify(token);
+
+      if (verifyAdminToken.role !== UserRole.ADMIN) {
+        throw new Error("You have no permission to get band's");
+      }
+      const role = req.body.role;
+      const result = await UserController.UserBusiness.getBands(role)
+      return res.status(200).send(result);
     } catch (error) {
       res.status(error.errorCode || 400).send({ message: error.message });
     }

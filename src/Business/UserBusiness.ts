@@ -111,4 +111,12 @@ export class UserBusiness {
       return accessToken;
     }
   }
+  public async getBands( role: string) {
+    const result = await this.userDatabase.getBands(role)
+
+    if(!result) {
+      throw new Error("Band not found");
+    }
+    return result
+  }
 }
