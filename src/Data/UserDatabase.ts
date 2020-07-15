@@ -90,7 +90,7 @@ export class UserDatabase extends BaseDatabase {
       );
       const userRole = this.UserFromUserModel(result[0][0]);
 
-      if (userRole.getRole() !== "admin") {
+      if (userRole.getRole() === UserRole.BANDA) {
         await super.getConnection().raw(`
      UPDATE ${this.table}
      SET is_approved = 0

@@ -26,11 +26,11 @@ export class UserBusiness {
     description_band?: string
   ) {
     if (!name || !email || !password || !role) {
-      throw new InvalidParameterError("MISSING INPUT");
+      throw new InvalidParameterError("Missing input");
     }
 
     if (email.indexOf("@") === -1 || email.indexOf(".com") === -1) {
-      throw new InvalidParameterError("INVALID EMAIL");
+      throw new InvalidParameterError("Invalid email");
     }
 
     if (password.length < 6) {
@@ -40,10 +40,10 @@ export class UserBusiness {
     }
     if (role === UserRole.ADMIN && password.length < 10) {
       throw new InvalidParameterError(
-        "YOUR PASSWORD NEED 10 OR MORE CHARACTERS"
+        "Invalid password"
       );
     }
-    if (role === UserRole.BANDA && password.length <= 10) {
+    if (role === UserRole.BANDA && password.length < 10) {
       throw new InvalidParameterError("Invalid password");
     }
 
