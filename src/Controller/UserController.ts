@@ -17,17 +17,34 @@ export class UserController {
 
   public async signup(req: Request, res: Response) {
     try {
-      const result = await UserController.UserBusiness.signup(
-        req.body.name,
-        req.body.nickname,
-        req.body.email,
-        req.body.password,
-        req.body.role,
-        req.body.description_band
-      );
+      const newUser = {
+        name: req.body.name,
+        nickname: req.body.nickname,
+        email: req.body.email,
+        password: req.body.password,
+        role: req.body.role,
+        description_band: req.body.description_band,
+      };
+
+      if (req.body.role === UserRole.ADMIN) {
+        const requestToken = req.headers.authorization as string
+        const verifyAdminToken = new Authenticator().verify(requestToken)
+
+        if (verifyAdminToken.role !== UserRole.ADMIN) {
+          throw new Error("You cannot signup as admin")
+        }
+      }
+      await UserController.UserBusiness.signup(
+        newUser.name,
+        newUser.nickname,
+        newUser.email, 
+        newUser.password,
+        newUser.role,
+        newUser.description_band
+      )
 
       res.status(200).send({
-        result,
+        newUser
       });
     } catch (err) {
       res.status(err.errorCode || 400).send({ message: err.message });
@@ -47,26 +64,21 @@ export class UserController {
   }
 
   async approve(req: Request, res: Response) {
+    try {
+      const id = req.body.id;
+      const token = req.headers.authorization as string;
+      const authenticator = new Authenticator().verify(token);
 
-    try{
-      const id = req.body.id
-      const token = req.headers.authorization as string
-      const authenticator = new Authenticator().verify(token)
-
-      if(authenticator.role !== UserRole.ADMIN) {
-        throw new Error ("You cannot approve anyone")
+      if (authenticator.role !== UserRole.ADMIN) {
+        throw new Error("You cannot approve anyone");
       }
 
-      await UserController.UserBusiness.approve(id)
+      await UserController.UserBusiness.approve(id);
       res.status(200).send({
-        message:"User approved"
-      })
-
-
-    }catch(error){
-      res.status(error.errorCode || 400).send({ message: error.message}) 
+        message: "User approved",
+      });
+    } catch (error) {
+      res.status(error.errorCode || 400).send({ message: error.message });
+    }
   }
-
-
-}
 }
