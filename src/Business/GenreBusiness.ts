@@ -24,4 +24,13 @@ export class GenreBusiness {
       return {genre}
     }
   }
+
+  public async getGenre() {
+    const result = await this.genreDatabase.getGenre()
+    
+    if(!result) {
+      throw new Error ("Not found genre")
+    }
+    return result
+  }
 }
