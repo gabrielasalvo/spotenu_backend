@@ -1,8 +1,10 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { Genre  } from "../model/Genre";
+import { Genre } from "../model/Genre";
+
+
 export class GenreDatabase extends BaseDatabase {
-    table: string = "genre_spotenu";
-    private GenreFromGenreModel(GenreModel?:any): Genre | undefined {
+   private table: string = "genre_spotenu";
+    private GenreFromGenreModel(GenreModel?:any): Genre | undefined{
         return (
             GenreModel && 
             new Genre (
@@ -11,7 +13,7 @@ export class GenreDatabase extends BaseDatabase {
             )
         )
     }
-    public async createGenre(newGender: Genre):Promise<void> {
+    public async createGenre(newGender: Genre):Promise<any> {
         await  this.getConnection().raw (
 
             `
@@ -20,9 +22,7 @@ export class GenreDatabase extends BaseDatabase {
             VALUES (
                 "${newGender.getId()}",
                 "${newGender.getName()}"
-
             )
-            
             `
         )
     }
