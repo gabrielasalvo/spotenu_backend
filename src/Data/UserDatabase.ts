@@ -121,4 +121,6 @@ export class UserDatabase extends BaseDatabase {
       throw new InvalidParameterError("Tivemos um erro. Tente novamente.");
     }
   }
+
+  
 }

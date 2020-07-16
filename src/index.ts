@@ -1,6 +1,7 @@
 import express from "express";
 import {AddressInfo} from "net";
 import { userRouter } from "./router/userRouter";
+import { genreRouter  } from "./router/GenreRouter"
 
 const app = express();
 
@@ -8,6 +9,8 @@ const app = express();
 app.use(express.json());
 
 app.use("/user", userRouter);
+
+app.use("/genre", genreRouter)
 
 const server = app.listen(3000, () => {
   if (server) {
