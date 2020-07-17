@@ -1,6 +1,6 @@
 import express from "express";
 import { UserController } from '../Controller/UserController'
-import { User } from "../model/User";
+
 //linha responsável por criar um módulo de rotas no express
 
 

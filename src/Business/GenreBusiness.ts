@@ -1,6 +1,5 @@
-import { UserDatabase } from "../Data/UserDatabase";
-import { IdGenerator } from "../Services/IdGenerator";
 
+import { IdGenerator } from "../Services/IdGenerator";
 import { NotFoundError } from "../error/notFoundError";
 import { InvalidParameterError } from "../error/invalidParameterError";
 import { Genre } from "../model/Genre";
@@ -24,5 +23,14 @@ export class GenreBusiness {
 
       return {genre}
     }
+  }
+
+  public async getGenre() {
+    const result = await this.genreDatabase.getGenre()
+    
+    if(!result) {
+      throw new Error ("Not found genre")
+    }
+    return result
   }
 }
