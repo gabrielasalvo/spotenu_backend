@@ -3,6 +3,7 @@ import {AddressInfo} from "net";
 import { userRouter } from "./router/userRouter";
 import { genreRouter  } from "./router/GenreRouter"
 import { albumRouter } from "./router/AlbumRouter";
+import { musicRouter} from "./router/MusicsRouter"
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.use("/user", userRouter);
 app.use("/genre", genreRouter)
 
 app.use("/album",albumRouter )
+app.use("/music", musicRouter)
+
 
 const server = app.listen(3000, () => {
   if (server) {
