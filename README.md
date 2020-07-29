@@ -22,6 +22,8 @@ O Spotenu é um projeto que visa facilitar o acesso a músicas pelo mundo. Para 
 ``
 
 ### Requisitos:
+
 :exclamation: [Node](https://nodejs.org/en/download/)
+
 :exclamation: [Npm](https://www.npmjs.com/)
 
