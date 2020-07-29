@@ -39,3 +39,10 @@ npm install
 Por último, suba a aplicação:
 ```
 npm start
+
+Deploy do projeto 
+``
+https://a4gkj55ri7.execute-api.us-east-1.amazonaws.com/dev
+
+``
+
