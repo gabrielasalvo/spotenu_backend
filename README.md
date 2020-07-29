@@ -27,3 +27,15 @@ O Spotenu é um projeto que visa facilitar o acesso a músicas pelo mundo. Para 
 
 :exclamation: [Npm](https://www.npmjs.com/)
 
+## Como rodar a aplicação :flecha_para_frente:
+No terminal, clone o projeto:
+```
+git clone https://github.com/nauaramelo/spotenu-front.git
+```
+Instale as depêndencias do projeto em sua máquina:
+```
+npm install
+```
+Por último, suba a aplicação:
+```
+npm start
