@@ -30,7 +30,7 @@ O Spotenu é um projeto que visa facilitar o acesso a músicas pelo mundo. Para 
 ## Como rodar a aplicação :flecha_para_frente:
 No terminal, clone o projeto:
 ```
-git clone https://github.com/nauaramelo/spotenu-front.git
+git clone <url do projeto>
 ```
 Instale as depêndencias do projeto em sua máquina:
 ```
